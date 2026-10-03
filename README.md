@@ -208,8 +208,6 @@ The destination S3 bucket is hosted in the Singapore region (`ap-southeast-1`) a
 
 ![Destination Bucket Singapore](screenshots/destination-bucket-singapore.png)
 
----
-
 ## 🎯 Project Use Cases
 
 ### 1. Replication of Audit and Compliance Data

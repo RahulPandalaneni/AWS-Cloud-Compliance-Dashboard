@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Compliance Dashboard | Cross-Region Replication</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 1. Dark Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+                        <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                    <div class="brand-text">
+                        <span class="brand-prefix">AWS</span>
+                        <span class="brand-title">COMPLIANCE</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">MONITORING</div>
+                <a href="#overview" class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Overview</span>
+                </a>
+                <a href="#crr-section" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="17 1 21 5 17 9"></polyline>
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                        <polyline points="7 23 3 19 7 15"></polyline>
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                    </svg>
+                    <span>Cross-Region Replication</span>
+                </a>
+                <a href="#compliance-table-section" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Compliance Status</span>
+                </a>
+
+                <div class="nav-section-label">AWS INFRASTRUCTURE</div>
+                <div class="sidebar-info-card">
+                    <div class="info-row">
+                        <span class="info-label">Source</span>
+                        <span class="info-tag tag-mumbai">ap-south-1</span>
+                    </div>
+                    <div class="info-value" title="{{ source_bucket }}">{{ source_bucket }}</div>
+                    
+                    <div class="info-divider"></div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">Destination</span>
+                        <span class="info-tag tag-singapore">ap-southeast-1</span>
+                    </div>
+                    <div class="info-value" title="{{ dest_bucket }}">{{ dest_bucket }}</div>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="connection-status-pill" id="sidebar-connection-pill">
+                    <span class="status-dot dot-checking"></span>
+                    <span class="status-label" id="sidebar-connection-text">Checking AWS...</span>
+                </div>
+                <button class="setup-btn" id="open-setup-modal-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    AWS Setup Guide
+                </button>
+            </div>
+        </aside>
+
+        <!-- 2. Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navigation / Header -->
+            <header class="top-header">
+                <div class="header-title-block">
+                    <div class="breadcrumb">
+                        <span>AWS Cloud Security</span>
+                        <span class="separator">/</span>
+                        <span class="active">Compliance Dashboard</span>
+                    </div>
+                    <h1 class="main-title">AWS COMPLIANCE</h1>
+                    <p class="subtitle">Continuous Amazon S3 Cross-Region Replication &amp; Data Protection Audit</p>
+                </div>
+
+                <div class="header-actions">
+                    <div class="mode-badge" id="data-source-badge">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text" id="data-source-text">Checking AWS...</span>
+                    </div>
+                    <button class="btn btn-primary" id="refresh-btn">
+                        <svg class="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        <span>Sync with AWS</span>
+                    </button>
+                    <div class="last-updated" id="last-updated-text">Syncing...</div>
+                </div>
+            </header>
+
+            <!-- AWS Connection Alert Banner (Conditional) -->
+            <div class="alert-banner" id="aws-alert-banner" style="display: none;">
+                <div class="alert-content">
+                    <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <div class="alert-text">
+                        <strong id="alert-title">AWS Credentials Required</strong>
+                        <p id="alert-message">To pull live metadata from S3 buckets, please provide your AWS credentials. Currently displaying UI layout in demo mode.</p>
+                    </div>
+                </div>
+                <button class="btn-banner-action" id="banner-action-btn">Configure .env</button>
+            </div>
+
+            <!-- 3. Four Summary Cards -->
+            <section class="summary-cards-section" id="overview">
+                <!-- Card 1: Compliant -->
+                <div class="metric-card card-compliant">
+                    <div class="card-top">
+                        <span class="card-label">COMPLIANT</span>
+                        <div class="card-icon-wrapper icon-green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-metric">
+                        <span class="metric-value" id="compliant-count">0</span>
+                        <span class="metric-badge" id="compliance-rate">0%</span>
+                    </div>
+                    <div class="card-subtext" id="compliant-subtext">Evaluated controls passed</div>
+                </div>
+
+                <!-- Card 2: Non-Compliant -->
+                <div class="metric-card card-non-compliant">
+                    <div class="card-top">
+                        <span class="card-label">NON-COMPLIANT</span>
+                        <div class="card-icon-wrapper icon-red">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-metric">
+                        <span class="metric-value" id="non-compliant-count">0</span>
+                    </div>
+                    <div class="card-subtext" id="non-compliant-subtext">Immediate remediation needed</div>
+                </div>
+
+                <!-- Card 3: Warnings -->
+                <div class="metric-card card-warning">
+                    <div class="card-top">
+                        <span class="card-label">WARNINGS</span>
+                        <div class="card-icon-wrapper icon-amber">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-metric">
+                        <span class="metric-value" id="warnings-count">0</span>
+                    </div>
+                    <div class="card-subtext" id="warnings-subtext">Replication sync pending or notices</div>
+                </div>
+
+                <!-- Card 4: Resources Monitored -->
+                <div class="metric-card card-resources">
+                    <div class="card-top">
+                        <span class="card-label">RESOURCES MONITORED</span>
+                        <div class="card-icon-wrapper icon-blue">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-metric">
+                        <span class="metric-value" id="resources-count">0</span>
+                    </div>
+                    <div class="card-subtext" id="resources-subtext">2 S3 Buckets &amp; Replicated Objects</div>
+                </div>
+            </section>
+
+            <!-- 4. Cross-Region Replication Section -->
+            <section class="crr-section" id="crr-section">
+                <div class="section-header-block">
+                    <div>
+                        <h2 class="section-heading">Cross-Region Replication</h2>
+                        <p class="section-subheading">Active synchronization pipeline between primary and secondary AWS regions</p>
+                    </div>
+                    <div class="pipeline-status-badge" id="pipeline-status-badge">
+                        <span class="status-dot"></span>
+                        <span id="pipeline-status-text">Checking Replication...</span>
+                    </div>
+                </div>
+
+                <div class="replication-pipeline-container">
+                    <!-- Mumbai Source Card -->
+                    <div class="bucket-card source-card">
+                        <div class="bucket-card-header">
+                            <div class="bucket-type-tag">SOURCE BUCKET</div>
+                            <span class="region-badge badge-mumbai">
+                                <span class="flag-icon">IN</span>
+                                ap-south-1 (Mumbai)
+                            </span>
+                        </div>
+                        <h3 class="bucket-title" id="source-bucket-name">{{ source_bucket }}</h3>
+                        <p class="bucket-meta-desc">Primary production compliance storage bucket</p>
+
+                        <div class="bucket-details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Versioning</span>
+                                <span class="detail-val" id="source-versioning">Checking...</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Replication Rule</span>
+                                <span class="detail-val" id="source-replication">Checking...</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Public Access Block</span>
+                                <span class="detail-val" id="source-pab">Checking...</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Default Encryption</span>
+                                <span class="detail-val" id="source-encryption">Checking...</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Total Objects</span>
+                                <span class="detail-val highlight" id="source-objects">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Stored Size</span>
+                                <span class="detail-val highlight" id="source-bytes">0 B</span>
+                            </div>
+                        </div>
+
+                        <div class="bucket-footer">
+                            <span class="bucket-role-badge">CRR Origin</span>
+                            <span class="live-tag" id="source-live-tag">Live S3</span>
+                        </div>
+                    </div>
+
+                    <!-- Flow Connector / Arrow -->
+                    <div class="pipeline-connector">
+                        <div class="flow-line-wrapper">
+                            <div class="flow-line">
+                                <span class="pulse-point"></span>
+                            </div>
+                            <div class="flow-arrow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="connector-label">
+                            <span class="protocol-name">AWS S3 CRR</span>
+                            <span class="transfer-desc" id="connector-transfer-desc">Mumbai ➔ Singapore</span>
+                        </div>
+                        <div class="sync-badge" id="connector-sync-badge">Continuous Sync</div>
+                    </div>
+
+                    <!-- Singapore Destination Card -->
+                    <div class="bucket-card dest-card">
+                        <div class="bucket-card-header">
+                            <div class="bucket-type-tag">DESTINATION BUCKET</div>
+                            <span class="region-badge badge-singapore">
+                                <span class="flag-icon">SG</span>
+                                ap-southeast-1 (Singapore)
+                            </span>
+                        </div>
+                        <h3 class="bucket-title" id="dest-bucket-name">{{ dest_bucket }}</h3>
+                        <p class="bucket-meta-desc">Disaster recovery &amp; cross-region replica storage</p>
+
+                        <div class="bucket-details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Versioning</span>
+                                <span class="detail-val" id="dest-versioning">Checking...</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Replication Target</span>
+                                <span class="detail-val" id="dest-replication">Active Target</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Public Access Block</span>
+                                <span class="detail-val" id="dest-pab">Checking...</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Default Encryption</span>
+                                <span class="detail-val" id="dest-encryption">Checking...</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Total Objects</span>
+                                <span class="detail-val highlight" id="dest-objects">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Stored Size</span>
+                                <span class="detail-val highlight" id="dest-bytes">0 B</span>
+                            </div>
+                        </div>
+
+                        <div class="bucket-footer">
+                            <span class="bucket-role-badge">CRR Replica Target</span>
+                            <span class="live-tag" id="dest-live-tag">Live S3</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Compliance Status & Monitored Objects Table -->
+            <section class="compliance-table-section" id="compliance-table-section">
+                <div class="table-card">
+                    <div class="table-header-controls">
+                        <div class="table-title-group">
+                            <h2 class="table-heading">Compliance Status &amp; Recent Objects</h2>
+                            <p class="table-subheading">Object-level S3 replication metadata and security controls audit</p>
+                        </div>
+
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input type="text" id="table-search" placeholder="Search objects or controls...">
+                            </div>
+
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" data-filter="all">All</button>
+                                <button class="filter-tab" data-filter="compliant">Compliant</button>
+                                <button class="filter-tab" data-filter="warning">Warnings</button>
+                                <button class="filter-tab" data-filter="non-compliant">Non-Compliant</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="compliance-table" id="compliance-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Resource / Object Key</th>
+                                    <th>Type</th>
+                                    <th>Source Bucket</th>
+                                    <th>Destination Bucket</th>
+                                    <th>S3 Replication Status</th>
+                                    <th>Compliance Status</th>
+                                    <th>Size</th>
+                                    <th>Last Modified</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <!-- Dynamically populated by app.js -->
+                                <tr>
+                                    <td colspan="8" class="table-loading-cell">
+                                        <div class="spinner"></div>
+                                        <span>Fetching live AWS compliance data...</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-footer">
+                        <span class="footer-count" id="table-record-count">Showing 0 records</span>
+                        <div class="legend-items">
+                            <span class="legend-item"><span class="legend-pill pill-completed"></span> COMPLETED: Replicated</span>
+                            <span class="legend-item"><span class="legend-pill pill-pending"></span> PENDING: Syncing</span>
+                            <span class="legend-item"><span class="legend-pill pill-failed"></span> FAILED: Re-try</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- AWS Setup / Credentials Modal -->
+    <div class="modal-overlay" id="setup-modal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+                    </svg>
+                    <h3>AWS Connection Setup</h3>
+                </div>
+                <button class="modal-close" id="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>This dashboard queries real Amazon S3 buckets using <code>boto3</code> without exposing credentials in code.</p>
+                
+                <h4>Option 1: Project <code>.env</code> file (Recommended)</h4>
+                <p>Create a file named <code>.env</code> in the project root based on <code>.env.example</code>:</p>
+                <pre class="code-block"><code>AWS_ACCESS_KEY_ID=AKIA...
+AWS_SECRET_ACCESS_KEY=wJalr...
+SOURCE_BUCKET_NAME=compliance-source-rahul-2026
+SOURCE_BUCKET_REGION=ap-south-1
+DEST_BUCKET_NAME=compliance-destination-rahul-2026
+DEST_BUCKET_REGION=ap-southeast-1</code></pre>
+
+                <h4>Option 2: AWS CLI Credentials</h4>
+                <p>Run <code>aws configure</code> in your terminal to set your default credentials in <code>~/.aws/credentials</code>.</p>
+
+                <h4>Required IAM Permissions</h4>
+                <p>The IAM user/role should have read access to both buckets:</p>
+                <ul>
+                    <li><code>s3:ListBucket</code>, <code>s3:GetObject</code></li>
+                    <li><code>s3:GetBucketVersioning</code>, <code>s3:GetBucketReplication</code></li>
+                    <li><code>s3:GetBucketPublicAccessBlock</code>, <code>s3:GetEncryptionConfiguration</code></li>
+                </ul>
+
+                <div class="modal-status-box" id="modal-test-output">
+                    Status: <span id="modal-status-text">Ready to test connection</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modal-cancel-btn">Close</button>
+                <button class="btn btn-primary" id="modal-test-btn">Test AWS Connection</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

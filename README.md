@@ -182,7 +182,7 @@ For the IAM user or role used by the dashboard, attach the following minimal rea
 
 ---
 
-## 📸 Project Screenshots
+##  Project Screenshots
 
 ### Live AWS Compliance Dashboard
 
@@ -208,7 +208,7 @@ The destination S3 bucket is hosted in the Singapore region (`ap-southeast-1`) a
 
 ![Destination Bucket Singapore](screenshots/destination-bucket-singapore.png)
 
-## 🎯 Project Use Cases
+##  Project Use Cases
 
 ### 1. Replication of Audit and Compliance Data
 
@@ -220,7 +220,7 @@ The project demonstrates storing replicated data in a separate AWS region, which
 
 ---
 
-## 🧪 Demonstration Flow
+##  Demonstration Flow
 
 1. Configure the source S3 bucket in Mumbai.
 2. Configure the destination S3 bucket in Singapore.
@@ -234,7 +234,7 @@ The project demonstrates storing replicated data in a separate AWS region, which
 
 ---
 
-## 🔐 Security
+##  Security
 
 - AWS credentials are never hardcoded in the application source code.
 - `.env` files are excluded through `.gitignore`.
@@ -244,7 +244,7 @@ The project demonstrates storing replicated data in a separate AWS region, which
 
 ---
 
-## 👨‍💻 Individual Contribution
+##  Individual Contribution
 
 This project involved:
 

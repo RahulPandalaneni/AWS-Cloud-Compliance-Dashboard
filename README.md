@@ -180,9 +180,83 @@ For the IAM user or role used by the dashboard, attach the following minimal rea
 
 ## S3 Object Replication Status Reference
 
-The dashboard inspects the `ReplicationStatus` attribute on S3 objects:
+---
 
-- **`COMPLETED`**: Object has successfully replicated to the Singapore destination bucket.
-- **`REPLICA`**: Object in the destination bucket that was created via Cross-Region Replication.
-- **`PENDING`**: Object replication is currently in progress.
-- **`FAILED`**: S3 replication rule encountered an error (e.g., KMS permission issue or IAM role misconfiguration).
+## 📸 Project Screenshots
+
+### Live AWS Compliance Dashboard
+
+The dashboard connects to AWS using Boto3 and displays the current compliance and S3 Cross-Region Replication status.
+
+![Live AWS Compliance Dashboard](screenshots/dashboard-live.png)
+
+### Compliance Status
+
+The compliance table shows the replication and security-control status monitored by the application.
+
+![Compliance Status](screenshots/compliance-status.png)
+
+### Source Bucket — Mumbai
+
+The source S3 bucket is hosted in the Mumbai region (`ap-south-1`).
+
+![Source Bucket Mumbai](screenshots/source-bucket-mumbai.png)
+
+### Destination Bucket — Singapore
+
+The destination S3 bucket is hosted in the Singapore region (`ap-southeast-1`) and receives replicated objects.
+
+![Destination Bucket Singapore](screenshots/destination-bucket-singapore.png)
+
+---
+
+## 🎯 Project Use Cases
+
+### 1. Replication of Audit and Compliance Data
+
+Amazon S3 Cross-Region Replication can replicate important compliance or audit-related objects from the Mumbai source bucket to the Singapore destination bucket.
+
+### 2. Regional Data Placement
+
+The project demonstrates storing replicated data in a separate AWS region, which can support scenarios where organizations require data to be available in a specific geographic region.
+
+---
+
+## 🧪 Demonstration Flow
+
+1. Configure the source S3 bucket in Mumbai.
+2. Configure the destination S3 bucket in Singapore.
+3. Enable versioning on both buckets.
+4. Configure S3 Cross-Region Replication.
+5. Upload `compliance-report.txt` to the Mumbai source bucket.
+6. Verify that the object is replicated to the Singapore bucket.
+7. Start the Flask dashboard.
+8. Click **Sync** to retrieve the latest AWS configuration.
+9. Verify the replication status and compliance results in the dashboard.
+
+---
+
+## 🔐 Security
+
+- AWS credentials are never hardcoded in the application source code.
+- `.env` files are excluded through `.gitignore`.
+- The dashboard is designed around read-only AWS S3 monitoring permissions.
+- AWS access keys and secret keys must never be committed to the repository.
+- The IAM dashboard user should use the minimum permissions required for compliance monitoring.
+
+---
+
+## 👨‍💻 Individual Contribution
+
+This project involved:
+
+- AWS S3 source and destination bucket configuration
+- S3 Cross-Region Replication setup
+- IAM replication role configuration
+- AWS CLI and credential configuration
+- Boto3 integration with the Flask backend
+- Compliance monitoring logic
+- Dashboard UI implementation
+- Live replication testing
+- Figma dashboard design
+- Project documentation and GitHub repository management.

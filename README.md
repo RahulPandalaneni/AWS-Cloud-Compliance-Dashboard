@@ -167,14 +167,6 @@ For the IAM user or role used by the dashboard, attach the following minimal rea
 
 ---
 
-## API Endpoints
-
-| Endpoint | Method | Description |
-| :--- | :--- | :--- |
-| `/` | `GET` | Main responsive compliance dashboard web page |
-| `/api/status` | `GET` | Checks AWS credential presence, authorization, and bucket configurations |
-| `/api/compliance`| `GET` | Audits both S3 buckets, object replication statuses, and evaluates compliance |
-| `/api/refresh` | `POST` | Forces on-demand cache re-sync with AWS S3 |
 
 ---
 
